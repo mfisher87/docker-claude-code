@@ -31,7 +31,7 @@ jobs:
 
       - name: "Tag image with Git tag or 'latest'"
         id: tag_git_tag_or_latest
-        run: 
+        run: |
           docker tag ${IMAGE_NAME} ${IMAGE_NAME}:${IMAGE_TAG}
           echo "tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
 
