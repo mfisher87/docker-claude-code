@@ -1,6 +1,6 @@
 services:
   claude-code:
-    image: "ghcr.io/mfisher87/claude-code"
+    image: "ghcr.io/mfisher87/claude-code:${CLAUDE_CODE_VERSION:?Error: CLAUDE_CODE_VERSION is required}"
     build:
       context: "."
       args:

@@ -14,14 +14,8 @@ jobs:
     permissions:
       packages: "write"
     env:
+      # Must match `image` value in compose.yml
       IMAGE_NAME: "ghcr.io/mfisher87/claude-code"
-      # GitHub Actions expressions conditionals are ternary expressions that
-      # look a lot like bash. In Python, this would read as:
-      #
-      #     github.ref_name if github.ref_type == 'tag' else 'latest'
-      #
-      # https://docs.github.com/en/actions/learn-github-actions/expressions
-      IMAGE_TAG: "${{ github.ref_type == 'tag' && github.ref_name || 'latest' }}"
 
     steps:
       - uses: "actions/checkout@v3"
@@ -29,26 +23,30 @@ jobs:
       - name: "Build"
         run: "docker compose build"
 
-      - name: "Tag image with Git tag or 'latest'"
-        id: tag_git_tag_or_latest
+      - name: "Get built image tag"
+        id: "get_built_tag"
         run: |
-          docker tag ${IMAGE_NAME} ${IMAGE_NAME}:${IMAGE_TAG}
-          echo "tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
+          echo "tag=$(docker image ls --format '{{.Repository}}:{{.Tag}}')" >> $GITHUB_OUTPUT
 
-      - name: "Tag image with Claude Code version"
-        id: tag_claude_code_version
+      - name: "Tag image with Git tag or 'latest'"
+        id: "tag_with_git_tag_or_latest"
         run: |
-          source .env
-          TAG="${CLAUDE_CODE_VERSION}"
-          docker tag ${IMAGE_NAME} ${IMAGE_NAME}:${TAG}
-          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          # GitHub Actions expressions conditionals are ternary expressions that
+          # look a lot like bash. In Python, this would read as:
+          #
+          #     github.ref_name if github.ref_type == 'tag' else 'latest'
+          #
+          # https://docs.github.com/en/actions/learn-github-actions/expressions
+          NEW_TAG=${IMAGE_NAME}:${{ github.ref_type == 'tag' && github.ref_name || 'latest' }}
+          docker tag ${{ steps.get_built_tag.outputs.tag }} ${NEW_TAG}
+          echo "tag=${NEW_TAG}" >> $GITHUB_OUTPUT
 
       - name: "Tag image with Git sha"
-        id: tag_sha
+        id: "tag_with_sha"
         run: |
-          TAG=$(echo "${GITHUB_SHA}" | cut -c1-12)
-          docker tag ${IMAGE_NAME} ${IMAGE_NAME}:${TAG}
-          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          NEW_TAG=${IMAGE_NAME}:$(echo "${GITHUB_SHA}" | cut -c1-12)
+          docker tag ${{ steps.get_built_tag.outputs.tag }} ${NEW_TAG}
+          echo "tag=${NEW_TAG}" >> $GITHUB_OUTPUT
 
       - name: "GHCR login"
         uses: "docker/login-action@v2"
@@ -59,6 +57,9 @@ jobs:
 
       - name: "Push to image registry"
         run: |
-          docker push ${IMAGE_NAME}:${{ steps.tag_git_tag_or_latest.outputs.tag }}
-          docker push ${IMAGE_NAME}:${{ steps.tag_claude_code_version.outputs.tag }}
-          docker push ${IMAGE_NAME}:${{ steps.tag_sha.outputs.tag }}
+          # Push image as built and tagged by the compose config (i.e. tagged with the claude code version)
+          docker compose push
+
+          # Push extra tags
+          docker push ${{ steps.tag_with_git_tag_or_latest.outputs.tag }}
+          docker push ${{ steps.tag_with_sha.outputs.tag }}
