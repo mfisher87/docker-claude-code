@@ -1,0 +1,7 @@
+services:
+  claude-code:
+    image: "ghcr.io/mfisher87/claude-code"
+    build:
+      context: "."
+      args:
+        CLAUDE_CODE_VERSION: "${CLAUDE_CODE_VERSION}"
