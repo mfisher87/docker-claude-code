@@ -21,7 +21,11 @@ jobs:
       - uses: "actions/checkout@v3"
 
       - name: "Build"
-        run: "docker compose build"
+        run: |
+          # Clean before build -- sometimes there are dependabot images already present :(
+          docker system prune -af
+
+          docker compose build
 
       - name: "Get built image tag"
         id: "get_built_tag"
