@@ -15,5 +15,7 @@ ENV DISABLE_AUTOUPDATER=1
 ARG CLAUDE_CODE_VERSION
 RUN test -n "${CLAUDE_CODE_VERSION}" || (echo "ERROR: CLAUDE_CODE_VERSION build argument is required" && exit 1)
 RUN curl -fsSL https://claude.ai/install.sh | bash -s ${CLAUDE_CODE_VERSION}
-
 ENV PATH="/root/.local/bin:${PATH}"
+
+RUN claude plugin marketplace add anthropics/claude-plugins-official
+RUN claude plugin install superpowers@claude-plugins-official
