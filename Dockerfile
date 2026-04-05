@@ -8,6 +8,12 @@ RUN apt install -y curl git
 # Install uv
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
+# Install pnpm
+ARG PNPM_VERSION=10.33.0
+RUN set -eu; \
+  curl -fsSL "https://github.com/pnpm/pnpm/releases/download/v${PNPM_VERSION}/pnpm-linuxstatic-x64" > /usr/local/bin/pnpm; \
+  chmod 0755 /usr/local/bin/pnpm
+
 # Disable Claude Code auto-updates
 ENV DISABLE_AUTOUPDATER=1
 
