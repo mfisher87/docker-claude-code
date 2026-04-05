@@ -8,7 +8,10 @@ RUN apt install -y curl git
 # Install uv
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# Install pnpm
+# Install nodejs & pnpm
+RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - && \
+  apt install -y nodejs
+
 ARG PNPM_VERSION=10.33.0
 RUN set -eu; \
   curl -fsSL "https://github.com/pnpm/pnpm/releases/download/v${PNPM_VERSION}/pnpm-linuxstatic-x64" > /usr/local/bin/pnpm; \
