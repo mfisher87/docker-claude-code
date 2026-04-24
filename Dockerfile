@@ -7,6 +7,7 @@ RUN apt install -y curl git
 
 # Install uv
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/root/.local/bin/:$PATH"
 
 # Install pixi
 RUN curl -fsSL https://pixi.sh/install.sh | sh
@@ -16,7 +17,7 @@ ENV PATH="/root/.pixi/bin:${PATH}"
 RUN pixi global install gh
 
 # Install jq
-RUN uv tool install jq
+RUN pixi global install jq
 
 # Install nodejs & pnpm
 RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - && \
