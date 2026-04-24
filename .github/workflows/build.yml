@@ -38,14 +38,16 @@ jobs:
 
       - name: "Tag image with Git tag or 'latest'"
         id: "tag_with_git_tag_or_latest"
-        run: |
+        env:
           # GitHub Actions expressions conditionals are ternary expressions that
           # look a lot like bash. In Python, this would read as:
           #
           #     github.ref_name if github.ref_type == 'tag' else 'latest'
           #
           # https://docs.github.com/en/actions/learn-github-actions/expressions
-          NEW_TAG=${IMAGE_NAME}:${{ github.ref_type == 'tag' && github.ref_name || 'latest' }}
+          VERSION_TAG: "${{ github.ref_type == 'tag' && github.ref_name || 'latest' }}"
+        run: |
+          NEW_TAG=${IMAGE_NAME}:${VERSION_TAG}
           docker tag ${{ steps.get_built_tag.outputs.tag }} ${NEW_TAG}
           echo "tag=${NEW_TAG}" >> $GITHUB_OUTPUT
 
