@@ -10,7 +10,7 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Install pixi
 RUN curl -fsSL https://pixi.sh/install.sh | sh
-ENV PATH="${HOME}/.pixi/bin:${PATH}"
+ENV PATH="/root/.pixi/bin:${PATH}"
 
 # Install gh cli
 RUN pixi global install gh
