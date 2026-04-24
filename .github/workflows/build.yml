@@ -33,7 +33,8 @@ jobs:
       - name: "Get built image tag"
         id: "get_built_tag"
         run: |
-          echo "tag=$(docker image ls --format '{{.Repository}}:{{.Tag}}')" >> $GITHUB_OUTPUT
+          TAG=$(docker image ls --format '{{.Repository}}:{{.Tag}}' "${IMAGE_NAME}")
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
 
       - name: "Tag image with Git tag or 'latest'"
         id: "tag_with_git_tag_or_latest"
