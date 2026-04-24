@@ -15,6 +15,9 @@ ENV PATH="/root/.pixi/bin:${PATH}"
 # Install gh cli
 RUN pixi global install gh
 
+# Install jq
+RUN uv tool install jq
+
 # Install nodejs & pnpm
 RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - && \
   apt install -y nodejs
