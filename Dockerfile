@@ -8,6 +8,12 @@ RUN apt install -y curl git
 # Install uv
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
+# Install pixi
+RUN curl -fsSL https://pixi.sh/install.sh | sh
+
+# Install gh cli
+RUN pixi global install gh
+
 # Install nodejs & pnpm
 RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - && \
   apt install -y nodejs
