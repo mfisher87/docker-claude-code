@@ -20,12 +20,15 @@ jobs:
     steps:
       - uses: "actions/checkout@v3"
 
+      - name: "Setup Docker Buildx"
+        uses: "docker/setup-buildx-action@v3"
+
       - name: "Build"
         run: |
-          # Clean before build -- sometimes there are dependabot images already present :(
-          docker system prune -af
-
-          docker compose build
+          docker buildx bake --load \
+            --file compose.yml \
+            --set "*.cache-from=type=gha" \
+            --set "*.cache-to=type=gha,mode=max"
 
       - name: "Get built image tag"
         id: "get_built_tag"
