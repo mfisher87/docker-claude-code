@@ -23,7 +23,7 @@ RUN pixi global install jq
 RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - && \
   apt install -y nodejs
 
-ARG PNPM_VERSION=10.33.0
+ARG PNPM_VERSION=11.17.0
 RUN set -eu; \
   curl -fsSL "https://github.com/pnpm/pnpm/releases/download/v${PNPM_VERSION}/pnpm-linuxstatic-x64" > /usr/local/bin/pnpm; \
   chmod 0755 /usr/local/bin/pnpm
