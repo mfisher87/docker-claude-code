@@ -3,7 +3,7 @@ FROM ubuntu:24.04
 WORKDIR /workdir
 
 RUN apt update
-RUN apt install -y curl git
+RUN apt install -y curl git libatomic1
 
 # Install uv
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -19,14 +19,13 @@ RUN pixi global install gh
 # Install jq
 RUN pixi global install jq
 
-# Install nodejs & pnpm
-RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - && \
-  apt install -y nodejs
-
-ARG PNPM_VERSION=11.17.0
+# Install pnpm & nodejs
+ARG PNPM_VERSION=11.16.0
 RUN set -eu; \
-  curl -fsSL "https://github.com/pnpm/pnpm/releases/download/v${PNPM_VERSION}/pnpm-linuxstatic-x64" > /usr/local/bin/pnpm; \
-  chmod 0755 /usr/local/bin/pnpm
+  curl -fsSL https://get.pnpm.io/install.sh | env SHELL="$(which bash)" sh -
+ENV PNPM_HOME="/root/.local/share/pnpm"
+ENV PATH="$PNPM_HOME/bin:$PATH"
+RUN pnpm runtime set node lts -g
 
 # Disable Claude Code auto-updates
 ENV DISABLE_AUTOUPDATER=1
