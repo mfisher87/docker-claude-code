@@ -2,8 +2,17 @@ FROM ubuntu:24.04
 
 WORKDIR /workdir
 
-RUN apt update
-RUN apt install -y curl git libatomic1
+RUN apt update \
+  && apt install -y \
+     curl \
+     git \
+     libatomic1 \
+     gcc \
+     build-essential
+
+# Install Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
 
 # Install uv
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -18,6 +27,9 @@ RUN pixi global install gh
 
 # Install jq
 RUN pixi global install jq
+
+# Install nb-cli
+RUN cargo install nb-cli
 
 # Install pnpm & nodejs
 ARG PNPM_VERSION=11.16.0
